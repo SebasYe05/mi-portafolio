@@ -1,6 +1,22 @@
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 import './index.css'
 
 function App() {
+
+  const [estado, setEstado] = useState('apagada')
+
+  const cambiarEstado = () => {
+    if (estado === 'apagada') {
+      setEstado('encendida')
+
+      // Simular carga de 1 segundo
+      setTimeout(() => setEstado('bienvenida'), 1500);
+    } else {
+      setEstado('apagada')
+    }
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
 
@@ -21,8 +37,13 @@ function App() {
           </div>
 
           {/* PANTALLA SUPERIOR */}
-          <div className="relative h-64 w-[65%] bg-black rounded-lg border-[10px] border-gray-800 shadow-inner overflow-hidden flex items-center justify-center">
-
+          <div className={`relative h-64 w-[65%] rounded-lg border-[10px] border-gray-800 shadow-inner overflow-hidden flex flex-col items-center justify-center transition-colors duration-500 ${estado === 'apagada' ? 'bg-black' : 'bg-white'}`}>
+            {estado === 'bienvenida' && (
+              <div className="text-center animate-fade-in">
+                <p className="text-zinc-800 text-[10px] px-4">Bienvenido a mi portafolio,</p>
+                <p className="text-zinc-800 text-[10px] font-bold">hecho por Sebastian Sotomayor :D</p>
+              </div>
+            )}
           </div>
 
           {/* ALTAVOZ DERECHO */}
@@ -101,8 +122,9 @@ function App() {
 
             {/* boton power (Abajo de la cruceta) */}
             <div className="flex flex-col items-center gap-1 mt-auto">
-              <button className="w-10 h-10 bg-zinc-800 rounded-full border-2 border-zinc-900 shadow-md active:scale-90 active:shadow-inner flex items-center justify-center group transition-all">
-
+              <button className="w-10 h-10 bg-zinc-800 rounded-full border-2 border-zinc-900 shadow-md active:scale-90 active:shadow-inner flex items-center justify-center group transition-all"
+                onClick={cambiarEstado}
+              >
                 {/* Icono */}
                 <div className="relative w-4 h-4 border-2 border-white border-t-transparent rounded-full flex items-center justify-center">
                   <div className="absolute -top-1 w-0.5 h-2.5 bg-white"></div>
@@ -115,10 +137,15 @@ function App() {
           </div>
 
           {/* CENTRO: Pantalla inferior */}
-          <div className="relative h-full w-[60%] bg-black rounded-lg border-[10px] border-gray-800 shadow-inner overflow-hidden">
-            <div className="flex items-center justify-center h-full">
-
-            </div>
+          <div
+            onClick={() => estado === 'bienvenida' && cambiarEstado('menu')}
+            className={`relative h-full w-[60%] rounded-lg border-[10px] border-gray-800 shadow-inner overflow-hidden flex items-center justify-center transition-colors duration-500 cursor-pointer ${estado === 'apagada' ? 'bg-black' : 'bg-white'}`}
+          >
+            {estado === 'bienvenida' && (
+              <p className="text-zinc-400 text-[10px] animate-pulse">
+                Toque para continuar
+              </p>
+            )}
           </div>
 
           {/* LADO DERECHO */}
