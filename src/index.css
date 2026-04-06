@@ -1,0 +1,12 @@
+@import "tailwindcss";
+
+.patron-hexagono {
+  background-color: #3d0f0f; /* Color de fondo del marco (Vino Tinto oscuro) */
+  background-image: 
+    radial-gradient(#1a1a1a 20%, transparent 20%), /* Hueco oscuro */
+    radial-gradient(#1a1a1a 20%, transparent 20%); /* Hueco oscuro desplazado */
+  background-position: 0 0, 10px 10px; /* Desplazamiento para crear el hexágono */
+  background-size: 20px 20px; /* Tamaño del patrón repetitivo */
+  opacity: 0.8; /* Un poco de transparencia para suavizar */
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.5); /* Sombra interna para profundidad */
+}
