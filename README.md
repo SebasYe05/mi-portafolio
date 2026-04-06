@@ -1,16 +1,77 @@
-# React + Vite
+# Portfolio tipo consola 
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+¡Bienvenido! Este es mi portafolio interactivo, una recreación funcional de una consola clásica desarrollada con **React** y **Tailwind CSS**. El objetivo es presentar mis habilidades y proyectos de una manera nostálgica y creativa, simulando la interfaz de una portátil.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Proyectos Destacados
 
-## React Compiler
+Navega a través de la consola para conocer mis desarrollos principales:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+* **PhotoBogota**: Aplicación Full Stack para la gestión de fotografía urbana en Bogotá (Spring Boot + React + MongoDB)[cite: 5].
+* **Megamoto**: Plataforma para entusiastas de motocicletas con visor de imágenes 360° (Vite + CSS)[cite: 5].
+* **EFECTRONICA**: Sistema de alquiler y venta de iluminación desarrollado con PHP y Bootstrap[cite: 17, 18].
+* **Automatización & Mobile**: Experiencia en creación de bots con Selenium y apps móviles con Xamarin/.NET MAUI.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tecnologías Utilizadas
+
+* **Frontend**: React.js 
+* **Estilos**: Tailwind CSS 
+* **Animaciones**: Framer Motion 
+* **Iconos**: React Icons 
+* **Arquitectura**: Componentes modulares y hooks personalizados.
+
+---
+## Instalación y Uso
+
+Para ejecutar este portafolio localmente:
+
+1. **Clona el repositorio:**
+    ```bash
+    git clone https://github.com/SebasYe05/mi-portafolio.git
+    cd mi-portafolio
+    ```
+
+2. **Instala las dependencias:**
+    ```bash
+    npm install
+    ```
+
+3. **Inicia el servidor de desarrollo:**
+    ```bash
+    npm run dev
+    ```
+
+4. **Abre tu navegador** en `http://localhost:5173`
+
+---
+
+## Características
+
+* Interfaz tipo consola interactiva
+* Comandos personalizados para navegar proyectos
+* Diseño responsivo y accesible
+* Animaciones fluidas con Framer Motion
+* Tema oscuro inspirado en terminales clásicas
+
+---
+
+## Requisitos
+
+* Node.js 16+ 
+* npm o yarn
+
+---
+
+## Contacto
+
+* GitHub: [SebasYe05](https://github.com/SebasYe05)
+* Email: sebastianprovisional25@gmail.com
+
+---
+
+## Licencia
+
+Este proyecto está bajo la licencia MIT.
