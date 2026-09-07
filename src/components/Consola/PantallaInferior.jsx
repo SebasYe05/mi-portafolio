@@ -1,9 +1,14 @@
 import { apps } from '../../data/apps';
+import INFO_APPS from '../../data/info';
 import { SOFT_SKILLS } from '../../data/soft_skills';
 import { CERTIFICACIONES } from '../../data/certificaciones';
 import { FaBrain, FaPuzzlePiece, FaUsers, FaLightbulb, FaGlobe, FaAward } from 'react-icons/fa';
+import BloquesRenderer from './BloquesRenderer';
 
 const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocarPantalla, vistaInfo }) => {
+  const appId = apps[appSeleccionada]?.id;
+  const info = INFO_APPS[appId];
+
   return (
     <div
       onClick={() => estado === 'bienvenida' && alTocarPantalla('menu')}
@@ -19,11 +24,10 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
         </div>
       )}
 
-      {/* Menú principal */}
+      {/* Menú principal — grid uniforme 3+2 */}
       {estado === 'menu' && !vistaInfo && (
         <div className="flex flex-col h-full p-3 animate-fade-in">
-          {/* Grid de apps - 3 arriba + 2 abajo centrados */}
-          <div className="grid grid-cols-3 gap-3 mb-4">
+          <div className="grid grid-cols-3 gap-2.5 mb-2.5">
             {apps.slice(0, 3).map((app, index) => {
               const Icono = app.icon;
               return (
@@ -33,14 +37,14 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
                     e.stopPropagation();
                     setAppSeleccionada(index);
                   }}
-                  className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer
+                  className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer
                     ${
                       appSeleccionada === index
-                        ? `${app.color} text-white scale-110 shadow-lg border-2 border-white outline outline-2 outline-blue-400`
+                        ? `${app.color} text-white scale-105 shadow-md border-2 border-white outline outline-2 outline-blue-400`
                         : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200'
                     }`}
                 >
-                  <Icono size={26} />
+                  <Icono size={22} />
                   <p className="text-[6px] mt-1 font-medium tracking-tight text-center leading-tight px-0.5">
                     {app.name}
                   </p>
@@ -49,7 +53,9 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
             })}
           </div>
 
-          <div className="grid grid-cols-2 gap-3 px-6">
+          {/* Fila inferior: mismos tamaños que arriba, centrados */}
+          <div className="grid grid-cols-3 gap-2.5">
+            <div /> {/* spacer */}
             {apps.slice(3, 5).map((app, index) => {
               const Icono = app.icon;
               const realIndex = index + 3;
@@ -60,14 +66,14 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
                     e.stopPropagation();
                     setAppSeleccionada(realIndex);
                   }}
-                  className={`aspect-square rounded-2xl flex flex-col items-center justify-center transition-all cursor-pointer
+                  className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer
                     ${
                       appSeleccionada === realIndex
-                        ? `${app.color} text-white scale-110 shadow-lg border-2 border-white outline outline-2 outline-blue-400`
+                        ? `${app.color} text-white scale-105 shadow-md border-2 border-white outline outline-2 outline-blue-400`
                         : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200'
                     }`}
                 >
-                  <Icono size={26} />
+                  <Icono size={22} />
                   <p className="text-[6px] mt-1 font-medium tracking-tight text-center leading-tight px-0.5">
                     {app.name}
                   </p>
@@ -76,15 +82,13 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
             })}
           </div>
 
-          {/* Nombre de la app seleccionada */}
-          <div className="mt-auto text-center py-2 bg-zinc-100 rounded-full">
+          <div className="mt-auto text-center py-1.5 bg-zinc-100 rounded-full">
             <p className="text-[9px] font-bold text-zinc-600 uppercase tracking-wider">
               {apps[appSeleccionada]?.name || 'Selecciona una app'}
             </p>
           </div>
 
-          {/* Instrucciones */}
-          <div className="flex justify-between items-center mt-2 text-[7px] text-gray-400 px-1">
+          <div className="flex justify-between items-center mt-1.5 text-[7px] text-gray-400 px-1">
             <div className="flex items-center gap-2">
               <span>← ↑ ↓ →</span>
               <span className="text-gray-300">|</span>
@@ -101,9 +105,8 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
       {/* VistaInfo */}
       {estado === 'menu' && vistaInfo && (
         <div className="flex flex-col h-full p-2 animate-fade-in">
-          {apps[appSeleccionada].id === 4 ? (
+          {appId === 4 ? (
             <div className="flex-1 flex flex-col overflow-y-auto">
-              {/* Soft Skills */}
               <div>
                 <h3 className="text-[9px] font-bold text-emerald-700 mb-3 flex items-center gap-1.5">
                   <FaLightbulb /> Habilidades Blandas
@@ -124,7 +127,6 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
                 </div>
               </div>
 
-              {/* Certificaciones */}
               <div className="mt-5">
                 <h3 className="text-[9px] font-bold text-purple-700 mb-3 flex items-center gap-1.5">
                   <FaAward /> Certificaciones
@@ -146,13 +148,16 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
               </div>
             </div>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
-              <div className="text-center space-y-1">
-                <p className="text-[8px] text-center text-gray-500">
-                  Info detallada en<br />pantalla superior
-                </p>
-                <p className="text-[7px] text-gray-400">↑ ↓ para desplazar</p>
-              </div>
+            <div className="flex-1 overflow-y-auto">
+              {info?.bloquesBottom?.length > 0 ? (
+                <BloquesRenderer bloques={info.bloquesBottom} />
+              ) : (
+                <div className="flex items-center justify-center h-full">
+                  <p className="text-[8px] text-center text-gray-500">
+                    Info detallada en<br />pantalla superior
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
