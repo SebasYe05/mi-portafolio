@@ -6,11 +6,13 @@ import ParteDerecha from './components/Consola/ParteDerecha';
 import Altavoces from './components/Consola/Altavoces';
 import './index.css';
 import Bisagra from './components/Consola/Bisagra';
+import { apps } from './data/apps';
 
 function App() {
   const [estado, setEstado] = useState('apagada');
   const [appSeleccionada, setAppSeleccionada] = useState(0);
-  const [vistaInfo, setVistaInfo] = useState(false); // false = menú, true = info de la app
+  const [vistaInfo, setVistaInfo] = useState(false);
+  const [scrollInfo, setScrollInfo] = useState(null);
 
   const manejarPower = () => {
     if (estado === 'apagada') {
@@ -18,64 +20,72 @@ function App() {
       setTimeout(() => setEstado('bienvenida'), 1500);
     } else {
       setEstado('apagada');
-      setVistaInfo(false); // Resetear vista al apagar
+      setVistaInfo(false);
+      setScrollInfo(null);
     }
   };
 
-  // Función para navegar con la cruceta
   const manejarNavegacion = (direccion) => {
-    if (estado !== 'menu' || vistaInfo) return; // Solo navegar en menú y no en vista info
-    
-    const totalApps = 4; 
-    
-    switch(direccion) {
-      case 'arriba':
-        break;
-      case 'abajo':
-        break;
+    if (estado !== 'menu') return;
+
+    if (vistaInfo) {
+      // En vista info: arriba/abajo controlan el scroll
+      if (direccion === 'arriba' || direccion === 'abajo') {
+        setScrollInfo(direccion);
+        // Reset inmediato para permitir múltiples scrolls
+        setTimeout(() => setScrollInfo(null), 50);
+      }
+      return;
+    }
+
+    const totalApps = apps.length;
+
+    switch (direccion) {
       case 'izquierda':
-        setAppSeleccionada(prev => (prev - 1 + totalApps) % totalApps);
+        setAppSeleccionada((prev) => (prev - 1 + totalApps) % totalApps);
         break;
       case 'derecha':
-        setAppSeleccionada(prev => (prev + 1) % totalApps);
+        setAppSeleccionada((prev) => (prev + 1) % totalApps);
+        break;
+      case 'arriba':
+        setAppSeleccionada((prev) => (prev - 1 + totalApps) % totalApps);
+        break;
+      case 'abajo':
+        setAppSeleccionada((prev) => (prev + 1) % totalApps);
         break;
       default:
         break;
     }
   };
 
-  // Función para botón A (confirmar/aceptar)
   const manejarA = () => {
     if (estado === 'bienvenida') {
       setEstado('menu');
-    } else if (estado === 'menu') {
-      if (!vistaInfo) {
-        setVistaInfo(true); // Entrar a la info de la app seleccionada
-      }
-    } else if (vistaInfo) {
-      // Si ya estamos en vista info, no hacer nada
+    } else if (estado === 'menu' && !vistaInfo) {
+      setVistaInfo(true);
     }
   };
 
-  // Función para botón B (volver)
   const manejarB = () => {
     if (vistaInfo) {
-      setVistaInfo(false); 
+      setVistaInfo(false);
+      setScrollInfo(null);
     } else if (estado === 'menu') {
-      setEstado('bienvenida'); 
+      setEstado('bienvenida');
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-[600px] bg-blue-500 p-5 rounded-[30px] shadow-lg">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-4">
+      <div className="w-full max-w-[620px] bg-gradient-to-b from-blue-500 to-blue-600 p-5 rounded-[32px] shadow-2xl shadow-blue-900/50 border border-blue-400/30">
 
         <div className="relative flex items-center justify-center h-64 mb-4">
           <Altavoces side="left" />
-          <PantallaSuperior 
-            estado={estado} 
+          <PantallaSuperior
+            estado={estado}
             appSeleccionada={appSeleccionada}
             vistaInfo={vistaInfo}
+            scrollInfo={scrollInfo}
           />
           <Altavoces side="right" />
         </div>
@@ -83,8 +93,8 @@ function App() {
         <Bisagra />
 
         <div className="flex items-center justify-between px-2 h-64">
-          <ParteIzquierda 
-            manejarPower={manejarPower} 
+          <ParteIzquierda
+            manejarPower={manejarPower}
             estado={estado}
             manejarNavegacion={manejarNavegacion}
           />
@@ -95,7 +105,7 @@ function App() {
             alTocarPantalla={setEstado}
             vistaInfo={vistaInfo}
           />
-          <ParteDerecha 
+          <ParteDerecha
             manejarA={manejarA}
             manejarB={manejarB}
             estado={estado}
