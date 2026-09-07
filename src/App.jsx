@@ -29,10 +29,8 @@ function App() {
     if (estado !== 'menu') return;
 
     if (vistaInfo) {
-      // En vista info: arriba/abajo controlan el scroll
       if (direccion === 'arriba' || direccion === 'abajo') {
         setScrollInfo(direccion);
-        // Reset inmediato para permitir múltiples scrolls
         setTimeout(() => setScrollInfo(null), 50);
       }
       return;
@@ -76,8 +74,8 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-4">
-      <div className="w-full max-w-[620px] bg-gradient-to-b from-blue-500 to-blue-600 p-5 rounded-[32px] shadow-2xl shadow-blue-900/50 border border-blue-400/30">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-[600px] bg-blue-500 p-5 rounded-[30px] shadow-lg">
 
         <div className="relative flex items-center justify-center h-64 mb-4">
           <Altavoces side="left" />
