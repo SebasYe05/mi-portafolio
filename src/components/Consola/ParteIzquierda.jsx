@@ -5,6 +5,7 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
   return (
     <div className="flex flex-col items-center justify-between h-full py-4 w-24">
       <div className="relative w-24 h-24 flex items-center justify-center select-none">
+        {/* Horizontal — solo click */}
         <div className="absolute w-20 h-7 bg-zinc-900 rounded-sm shadow-md border-b-2 border-black/50 flex justify-between px-1">
           <div
             onClick={() => manejarNavegacion('izquierda')}
@@ -20,6 +21,7 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
           </div>
         </div>
 
+        {/* Vertical — solo mousedown/touch (sin onClick = sin doble disparo) */}
         <div className="absolute w-7 h-20 bg-zinc-900 rounded-sm shadow-md border-r-2 border-black/50 flex flex-col justify-between py-1">
           <div
             onMouseDown={(e) => {
