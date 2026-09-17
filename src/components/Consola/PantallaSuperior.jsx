@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { apps } from '../../data/apps';
 import INFO_APPS from '../../data/info';
 import { SKILLS } from '../../data/skills';
 import { iconMap } from '../../data/icons';
-import { FaGithub } from 'react-icons/fa';
+import { FaGithub, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import miFoto from '../../assets/yop.jpeg';
 import BateriaConRayas from './BateriaConRayas';
 import BloquesRenderer from './BloquesRenderer';
@@ -30,7 +30,6 @@ const ContenidoInfo = ({ appId }) => {
   const info = INFO_APPS[appId];
   if (!info) return null;
 
-  // Skills: Hard Skills en pantalla superior
   if (appId === 4) {
     return (
       <div className="w-full p-3 animate-fade-in">
@@ -77,7 +76,6 @@ const ContenidoInfo = ({ appId }) => {
     );
   }
 
-  // Resto de apps: solo bloquesTop en pantalla superior
   return (
     <div className="w-full p-3 animate-fade-in">
       <h3 className="text-[11px] font-bold text-blue-800 mb-2 border-b border-blue-200 pb-1">
@@ -95,7 +93,21 @@ const ContenidoInfo = ({ appId }) => {
 
 const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) => {
   const [fecha, setFecha] = useState(new Date());
+  const [canScrollUp, setCanScrollUp] = useState(false);
+  const [canScrollDown, setCanScrollDown] = useState(false);
   const scrollRef = useRef(null);
+
+  const updateScrollHints = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) {
+      setCanScrollUp(false);
+      setCanScrollDown(false);
+      return;
+    }
+    const { scrollTop, scrollHeight, clientHeight } = el;
+    setCanScrollUp(scrollTop > 4);
+    setCanScrollDown(scrollTop + clientHeight < scrollHeight - 4);
+  }, []);
 
   useEffect(() => {
     if (!scrollRef.current) return;
@@ -105,6 +117,25 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
       scrollRef.current.scrollBy({ top: 40, behavior: 'smooth' });
     }
   }, [scrollInfo]);
+
+  useEffect(() => {
+    if (!vistaInfo) {
+      setCanScrollUp(false);
+      setCanScrollDown(false);
+      return;
+    }
+    const el = scrollRef.current;
+    if (!el) return;
+
+    updateScrollHints();
+    el.addEventListener('scroll', updateScrollHints);
+    // Recalcular tras render del contenido
+    const t = setTimeout(updateScrollHints, 80);
+    return () => {
+      el.removeEventListener('scroll', updateScrollHints);
+      clearTimeout(t);
+    };
+  }, [vistaInfo, appSeleccionada, updateScrollHints]);
 
   useEffect(() => {
     const timer = setInterval(() => setFecha(new Date()), 1000);
@@ -142,7 +173,7 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
         </div>
       )}
 
-      <div className="flex-1 flex flex-col items-center justify-center overflow-hidden">
+      <div className="flex-1 flex flex-col items-center justify-center overflow-hidden relative">
         {estado === 'bienvenida' && (
           <div className="text-center animate-fade-in">
             <p className="text-zinc-800 text-[10px] px-4">Bienvenido a mi portafolio,</p>
@@ -184,9 +215,33 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
         )}
 
         {estado === 'menu' && vistaInfo && (
-          <div ref={scrollRef} className="w-full h-full overflow-y-auto" style={{ scrollbarWidth: 'none' }}>
-            <ContenidoInfo appId={apps[appSeleccionada].id} />
-          </div>
+          <>
+            {/* Hint superior */}
+            {canScrollUp && (
+              <div className="absolute top-0 left-0 right-0 z-10 flex justify-center pointer-events-none">
+                <div className="w-full h-6 bg-gradient-to-b from-white via-white/80 to-transparent flex items-start justify-center pt-0.5">
+                  <FaChevronUp className="text-blue-400 text-[9px] animate-bounce-soft" />
+                </div>
+              </div>
+            )}
+
+            <div
+              ref={scrollRef}
+              className="w-full h-full overflow-y-auto console-scroll"
+            >
+              <ContenidoInfo appId={apps[appSeleccionada].id} />
+            </div>
+
+            {/* Hint inferior */}
+            {canScrollDown && (
+              <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center pointer-events-none">
+                <div className="w-full h-7 bg-gradient-to-t from-white via-white/90 to-transparent flex flex-col items-center justify-end pb-1">
+                  <FaChevronDown className="text-blue-400 text-[9px] animate-bounce-soft" />
+                  <span className="text-[6px] text-blue-400 font-medium tracking-wide">↑ ↓ scroll</span>
+                </div>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>

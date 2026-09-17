@@ -16,26 +16,16 @@ const INFO_APPS = {
     bloquesBottom: [
       {
         tipo: 'subtitulo',
-        contenido: 'Educación',
-        icon: 'FaGraduationCap',
+        contenido: 'Enfoque',
+        icon: 'FaTrophy',
       },
       {
         tipo: 'lista',
         items: [
-          'SENA — Tecnólogo ADSO · En curso (desde ago 2025)',
-          'SENA — Técnico en Programación · Julio 2024 · Honores: ProConect',
-        ],
-      },
-      {
-        tipo: 'subtitulo',
-        contenido: 'Certificaciones',
-        icon: 'FaAward',
-      },
-      {
-        tipo: 'lista',
-        items: [
-          'Foundational C# with Microsoft — FreeCodeCamp (Feb 2024)',
-          'Legacy JavaScript Algorithms & Data Structures V7 — FreeCodeCamp (Feb 2024)',
+          'Diseño de diagramas y arquitectura',
+          'Planeación de estrategias de calidad',
+          'Elaboración de planes de pruebas',
+          'Control de calidad riguroso',
         ],
       },
     ],
@@ -167,6 +157,51 @@ const INFO_APPS = {
     bloquesBottom: [],
   },
   5: {
+    titulo: 'Educación',
+    bloquesTop: [
+      {
+        tipo: 'subtitulo',
+        contenido: 'Formación formal',
+        icon: 'FaGraduationCap',
+      },
+      {
+        tipo: 'lista',
+        items: [
+          'SENA — Tecnólogo en Análisis y Desarrollo de Software (ADSO) · En curso (desde ago 2025)',
+          'SENA — Técnico en Programación de Software · Julio 2024 · Honores: Proyecto ProConect',
+        ],
+      },
+      {
+        tipo: 'texto',
+        contenido:
+          'En ADSO me formo con visión integral del software: modelado, calidad, documentación y pruebas. Gracias SENA.',
+      },
+    ],
+    bloquesBottom: [
+      {
+        tipo: 'subtitulo',
+        contenido: 'Certificaciones',
+        icon: 'FaAward',
+      },
+      {
+        tipo: 'lista',
+        items: [
+          'Foundational C# with Microsoft — FreeCodeCamp (Feb 2024)',
+          'Legacy JavaScript Algorithms & Data Structures V7 — FreeCodeCamp (Feb 2024)',
+        ],
+      },
+      {
+        tipo: 'subtitulo',
+        contenido: 'Patrocinio',
+        icon: 'FaTrophy',
+      },
+      {
+        tipo: 'lista',
+        items: ['Respaldado y patrocinado por ASNET'],
+      },
+    ],
+  },
+  6: {
     titulo: 'Contacto',
     bloquesTop: [
       {

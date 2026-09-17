@@ -16,7 +16,6 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
         estado === 'apagada' ? 'bg-black' : 'bg-white'
       }`}
     >
-      {/* Bienvenida */}
       {estado === 'bienvenida' && (
         <div className="flex flex-col items-center justify-center h-full">
           <p className="text-black text-[10px] animate-pulse">Toque para continuar</p>
@@ -24,11 +23,11 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
         </div>
       )}
 
-      {/* Menú principal — grid uniforme 3+2 */}
+      {/* Menú principal — grid 3x2 equilibrado */}
       {estado === 'menu' && !vistaInfo && (
         <div className="flex flex-col h-full p-3 animate-fade-in">
-          <div className="grid grid-cols-3 gap-2.5 mb-2.5">
-            {apps.slice(0, 3).map((app, index) => {
+          <div className="grid grid-cols-3 gap-2.5">
+            {apps.map((app, index) => {
               const Icono = app.icon;
               return (
                 <div
@@ -40,35 +39,6 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
                   className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer
                     ${
                       appSeleccionada === index
-                        ? `${app.color} text-white scale-105 shadow-md border-2 border-white outline outline-2 outline-blue-400`
-                        : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200'
-                    }`}
-                >
-                  <Icono size={22} />
-                  <p className="text-[6px] mt-1 font-medium tracking-tight text-center leading-tight px-0.5">
-                    {app.name}
-                  </p>
-                </div>
-              );
-            })}
-          </div>
-
-          {/* Fila inferior: mismos tamaños que arriba, centrados */}
-          <div className="grid grid-cols-3 gap-2.5">
-            <div /> {/* spacer */}
-            {apps.slice(3, 5).map((app, index) => {
-              const Icono = app.icon;
-              const realIndex = index + 3;
-              return (
-                <div
-                  key={app.id}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setAppSeleccionada(realIndex);
-                  }}
-                  className={`aspect-square rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer
-                    ${
-                      appSeleccionada === realIndex
                         ? `${app.color} text-white scale-105 shadow-md border-2 border-white outline outline-2 outline-blue-400`
                         : 'bg-zinc-100 text-zinc-400 hover:bg-zinc-200'
                     }`}
@@ -102,11 +72,10 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
         </div>
       )}
 
-      {/* VistaInfo */}
       {estado === 'menu' && vistaInfo && (
         <div className="flex flex-col h-full p-2 animate-fade-in">
           {appId === 4 ? (
-            <div className="flex-1 flex flex-col overflow-y-auto">
+            <div className="flex-1 flex flex-col overflow-y-auto console-scroll">
               <div>
                 <h3 className="text-[9px] font-bold text-emerald-700 mb-3 flex items-center gap-1.5">
                   <FaLightbulb /> Habilidades Blandas
@@ -148,7 +117,7 @@ const PantallaInferior = ({ estado, appSeleccionada, setAppSeleccionada, alTocar
               </div>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 overflow-y-auto console-scroll">
               {info?.bloquesBottom?.length > 0 ? (
                 <BloquesRenderer bloques={info.bloquesBottom} />
               ) : (
