@@ -41,9 +41,33 @@ function App() {
     setAppSeleccionada((prev) => {
       const total = apps.length;
       let next = prev + delta;
-      // Clamp dentro del grid sin saltar a filas inexistentes de forma rara
-      if (next < 0) next = total + next;
-      if (next >= total) next = next % total;
+
+      // Movimiento vertical en grid: si se sale de rango, no hacer wrap raro
+      if (delta === COLS) {
+        // abajo
+        if (prev + COLS >= total) return prev; // ya está en la última fila
+        return prev + COLS;
+      }
+      if (delta === -COLS) {
+        // arriba
+        if (prev - COLS < 0) return prev; // ya está en la primera fila
+        return prev - COLS;
+      }
+
+      // Horizontal con wrap en la misma fila
+      if (delta === 1 || delta === -1) {
+        const row = Math.floor(prev / COLS);
+        const rowStart = row * COLS;
+        const rowEnd = Math.min(rowStart + COLS - 1, total - 1);
+        let col = prev + delta;
+        if (col < rowStart) col = rowEnd;
+        if (col > rowEnd) col = rowStart;
+        return col;
+      }
+
+      // fallback
+      if (next < 0) next = total - 1;
+      if (next >= total) next = 0;
       return next;
     });
     sounds.move();
@@ -53,7 +77,6 @@ function App() {
     (direccion) => {
       if (estado !== 'menu' || modalAbierto) return;
 
-      // En vista info: scroll más generoso
       if (vistaInfo) {
         if (direccion === 'arriba' || direccion === 'abajo') {
           setScrollInfo(direccion);
@@ -63,7 +86,6 @@ function App() {
         return;
       }
 
-      // Menú: navegación tipo grid 3 columnas
       switch (direccion) {
         case 'izquierda':
           moverApp(-1);
@@ -84,7 +106,6 @@ function App() {
     [estado, modalAbierto, vistaInfo, moverApp]
   );
 
-  // Repetir scroll al mantener pulsado ↑↓ en vista info
   const iniciarHold = (direccion) => {
     manejarNavegacion(direccion);
     if (vistaInfo && (direccion === 'arriba' || direccion === 'abajo')) {
@@ -100,7 +121,6 @@ function App() {
 
   useEffect(() => () => clearInterval(holdRef.current), []);
 
-  // Teclado
   useEffect(() => {
     const onKey = (e) => {
       if (esMobile) return;
@@ -213,14 +233,12 @@ function App() {
     sounds.open();
   };
 
-  // X → abrir GitHub
   const manejarX = () => {
     window.open('https://github.com/SebasYe05', '_blank', 'noopener,noreferrer');
     sounds.open();
     setToast('Abriendo GitHub…');
   };
 
-  // START → mute/unmute
   const manejarStart = () => {
     const nowMuted = toggleMute();
     setMuted(nowMuted);
@@ -255,7 +273,7 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 p-4 gap-4">
       <div className="w-full max-w-[600px] bg-blue-500 p-5 rounded-[30px] shadow-lg">
         <div className="relative flex items-center justify-center h-64 mb-4">
           <Altavoces side="left" />
@@ -300,6 +318,21 @@ function App() {
         </div>
       </div>
 
+      {/* Leyenda de controles */}
+      <div className="w-full max-w-[600px] bg-white border border-gray-200 rounded-2xl shadow-sm px-5 py-3">
+        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2">Controles</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-4 gap-y-1.5 text-[11px] text-gray-600">
+          <div><span className="font-bold text-zinc-800">A</span> — Entrar / confirmar</div>
+          <div><span className="font-bold text-zinc-800">B</span> — Volver / cerrar</div>
+          <div><span className="font-bold text-zinc-800">Y</span> — Vista completa (modal)</div>
+          <div><span className="font-bold text-zinc-800">X</span> — Abrir GitHub</div>
+          <div><span className="font-bold text-zinc-800">↑↓←→</span> — Navegar / scroll</div>
+          <div><span className="font-bold text-zinc-800">START</span> — Sonido on/off</div>
+          <div><span className="font-bold text-zinc-800">POWER</span> — Encender / apagar</div>
+          <div className="sm:col-span-2"><span className="font-bold text-zinc-800">Teclado</span> — Flechas, A/B/Y/X, Enter, Esc</div>
+        </div>
+      </div>
+
       {toast && (
         <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-zinc-900 text-white text-sm font-medium shadow-xl animate-fade-in flex items-center gap-2">
           {muted ? <FaVolumeMute size={14} /> : null}
@@ -309,7 +342,13 @@ function App() {
       )}
 
       {modalAbierto && (
-        <ModalInfo appIndex={appSeleccionada} onClose={() => { setModalAbierto(false); sounds.back(); }} />
+        <ModalInfo
+          appIndex={appSeleccionada}
+          onClose={() => {
+            setModalAbierto(false);
+            sounds.back();
+          }}
+        />
       )}
     </div>
   );
