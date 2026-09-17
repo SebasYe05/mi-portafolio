@@ -5,7 +5,6 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
   return (
     <div className="flex flex-col items-center justify-between h-full py-4 w-24">
       <div className="relative w-24 h-24 flex items-center justify-center select-none">
-        {/* Horizontal */}
         <div className="absolute w-20 h-7 bg-zinc-900 rounded-sm shadow-md border-b-2 border-black/50 flex justify-between px-1">
           <div
             onClick={() => manejarNavegacion('izquierda')}
@@ -21,10 +20,12 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
           </div>
         </div>
 
-        {/* Vertical — hold para scroll continuo */}
         <div className="absolute w-7 h-20 bg-zinc-900 rounded-sm shadow-md border-r-2 border-black/50 flex flex-col justify-between py-1">
           <div
-            onMouseDown={() => hold('arriba')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              hold('arriba');
+            }}
             onMouseUp={release}
             onMouseLeave={release}
             onTouchStart={(e) => {
@@ -32,13 +33,15 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
               hold('arriba');
             }}
             onTouchEnd={release}
-            onClick={() => manejarNavegacion('arriba')}
             className="w-full h-8 flex flex-col items-center justify-start cursor-pointer transition-all active:scale-95 active:translate-y-[-2px]"
           >
             <div className="w-[2px] h-1.5 bg-white opacity-40 rounded-full mt-1"></div>
           </div>
           <div
-            onMouseDown={() => hold('abajo')}
+            onMouseDown={(e) => {
+              e.preventDefault();
+              hold('abajo');
+            }}
             onMouseUp={release}
             onMouseLeave={release}
             onTouchStart={(e) => {
@@ -46,14 +49,13 @@ const ParteIzquierda = ({ manejarPower, manejarNavegacion, iniciarHold, detenerH
               hold('abajo');
             }}
             onTouchEnd={release}
-            onClick={() => manejarNavegacion('abajo')}
             className="w-full h-8 flex flex-col items-center justify-end cursor-pointer transition-all active:scale-95 active:translate-y-[2px]"
           >
             <div className="w-[2px] h-1.5 bg-white opacity-40 rounded-full mb-1"></div>
           </div>
         </div>
 
-        <div className="absolute w-6 h-6 bg-zinc-900 rounded-full border border-zinc-800 shadow-inner z-10"></div>
+        <div className="absolute w-6 h-6 bg-zinc-900 rounded-full border border-zinc-800 shadow-inner z-10 pointer-events-none"></div>
       </div>
 
       <div className="flex flex-col items-center gap-1 mt-auto">
