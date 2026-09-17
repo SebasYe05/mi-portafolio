@@ -1,0 +1,39 @@
+version: 2
+updates:
+  # Dependabot usa el ecosistema "npm" y detecta pnpm-lock.yaml automáticamente
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "javascript"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    # Agrupa actualizaciones menores/parches para no saturar de PRs
+    groups:
+      production-minor:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      development-minor:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Actualizaciones de GitHub Actions del workflow CI
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+    commit-message:
+      prefix: "ci"
+      include: "scope"
