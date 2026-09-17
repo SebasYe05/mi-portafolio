@@ -1,17 +1,16 @@
-const ParteDerecha = ({ manejarA, manejarB, manejarX, manejarY, modalAbierto }) => {
+const ParteDerecha = ({ manejarA, manejarB, manejarX, manejarY, manejarStart, modalAbierto, muted }) => {
   return (
     <div className="flex flex-col items-center justify-between h-full py-4 w-24">
       <div className="relative w-24 h-24">
-        {/* X — copiar link */}
+        {/* X — GitHub */}
         <div
           onClick={manejarX}
-          title="Copiar link del portafolio"
+          title="Abrir GitHub"
           className="absolute top-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-zinc-900 rounded-full shadow-md flex items-center justify-center text-white text-[10px] font-bold border border-zinc-800 active:scale-90 cursor-pointer select-none transition-colors hover:bg-zinc-700"
         >
           X
         </div>
 
-        {/* A — confirmar */}
         <div
           onClick={manejarA}
           className="absolute top-1/2 right-0 -translate-y-1/2 w-8 h-8 bg-zinc-900 rounded-full shadow-md flex items-center justify-center text-white text-[10px] font-bold border border-zinc-800 active:scale-90 cursor-pointer select-none transition-colors hover:bg-zinc-700"
@@ -19,7 +18,6 @@ const ParteDerecha = ({ manejarA, manejarB, manejarX, manejarY, modalAbierto }) 
           A
         </div>
 
-        {/* B — volver */}
         <div
           onClick={manejarB}
           className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-8 bg-zinc-900 rounded-full shadow-md flex items-center justify-center text-white text-[10px] font-bold border border-zinc-800 active:scale-90 cursor-pointer select-none transition-colors hover:bg-zinc-700"
@@ -27,7 +25,6 @@ const ParteDerecha = ({ manejarA, manejarB, manejarX, manejarY, modalAbierto }) 
           B
         </div>
 
-        {/* Y — modal info completa */}
         <div
           onClick={manejarY}
           title="Ver info completa"
@@ -40,9 +37,20 @@ const ParteDerecha = ({ manejarA, manejarB, manejarX, manejarY, modalAbierto }) 
       </div>
 
       <div className="flex flex-col gap-2 w-full items-end pr-2 mt-auto">
+        {/* START = mute/unmute */}
         <div className="flex items-center gap-2">
-          <span className="text-[8px] text-white font-bold opacity-70 uppercase">Start</span>
-          <div className="w-8 h-2.5 bg-zinc-900 rounded-full shadow-sm border border-zinc-800"></div>
+          <span className="text-[8px] text-white font-bold opacity-70 uppercase">
+            {muted ? 'Mute' : 'Start'}
+          </span>
+          <div
+            onClick={manejarStart}
+            title={muted ? 'Activar sonido' : 'Silenciar'}
+            className={`w-8 h-2.5 rounded-full shadow-sm border cursor-pointer transition-colors active:scale-95 ${
+              muted
+                ? 'bg-red-600 border-red-500'
+                : 'bg-zinc-900 border-zinc-800 hover:bg-zinc-700'
+            }`}
+          ></div>
         </div>
         <div className="flex items-center gap-2">
           <span className="text-[8px] text-white font-bold opacity-70 uppercase">Select</span>

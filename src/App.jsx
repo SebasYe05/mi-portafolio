@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import PantallaSuperior from './components/Consola/PantallaSuperior';
 import PantallaInferior from './components/Consola/PantallaInferior';
 import ParteIzquierda from './components/Consola/ParteIzquierda';
@@ -8,7 +8,10 @@ import ModalInfo from './components/Consola/ModalInfo';
 import './index.css';
 import Bisagra from './components/Consola/Bisagra';
 import { apps } from './data/apps';
-import { FaDesktop, FaGithub } from 'react-icons/fa';
+import { FaDesktop, FaGithub, FaVolumeMute, FaVolumeUp } from 'react-icons/fa';
+import { sounds, isMuted, toggleMute } from './utils/sounds';
+
+const COLS = 3; // grid 3x2
 
 function App() {
   const [estado, setEstado] = useState('apagada');
@@ -18,6 +21,8 @@ function App() {
   const [modalAbierto, setModalAbierto] = useState(false);
   const [toast, setToast] = useState(null);
   const [esMobile, setEsMobile] = useState(false);
+  const [muted, setMuted] = useState(isMuted);
+  const holdRef = useRef(null);
 
   useEffect(() => {
     const check = () => setEsMobile(window.innerWidth < 768);
@@ -32,11 +37,142 @@ function App() {
     return () => clearTimeout(t);
   }, [toast]);
 
+  const moverApp = useCallback((delta) => {
+    setAppSeleccionada((prev) => {
+      const total = apps.length;
+      let next = prev + delta;
+      // Clamp dentro del grid sin saltar a filas inexistentes de forma rara
+      if (next < 0) next = total + next;
+      if (next >= total) next = next % total;
+      return next;
+    });
+    sounds.move();
+  }, []);
+
+  const manejarNavegacion = useCallback(
+    (direccion) => {
+      if (estado !== 'menu' || modalAbierto) return;
+
+      // En vista info: scroll más generoso
+      if (vistaInfo) {
+        if (direccion === 'arriba' || direccion === 'abajo') {
+          setScrollInfo(direccion);
+          setTimeout(() => setScrollInfo(null), 40);
+          sounds.click();
+        }
+        return;
+      }
+
+      // Menú: navegación tipo grid 3 columnas
+      switch (direccion) {
+        case 'izquierda':
+          moverApp(-1);
+          break;
+        case 'derecha':
+          moverApp(1);
+          break;
+        case 'arriba':
+          moverApp(-COLS);
+          break;
+        case 'abajo':
+          moverApp(COLS);
+          break;
+        default:
+          break;
+      }
+    },
+    [estado, modalAbierto, vistaInfo, moverApp]
+  );
+
+  // Repetir scroll al mantener pulsado ↑↓ en vista info
+  const iniciarHold = (direccion) => {
+    manejarNavegacion(direccion);
+    if (vistaInfo && (direccion === 'arriba' || direccion === 'abajo')) {
+      clearInterval(holdRef.current);
+      holdRef.current = setInterval(() => manejarNavegacion(direccion), 120);
+    }
+  };
+
+  const detenerHold = () => {
+    clearInterval(holdRef.current);
+    holdRef.current = null;
+  };
+
+  useEffect(() => () => clearInterval(holdRef.current), []);
+
+  // Teclado
+  useEffect(() => {
+    const onKey = (e) => {
+      if (esMobile) return;
+      const key = e.key;
+
+      if (key === 'Escape') {
+        if (modalAbierto) {
+          setModalAbierto(false);
+          sounds.back();
+        } else if (vistaInfo) {
+          setVistaInfo(false);
+          sounds.back();
+        }
+        return;
+      }
+
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(key)) {
+        e.preventDefault();
+        const map = {
+          ArrowUp: 'arriba',
+          ArrowDown: 'abajo',
+          ArrowLeft: 'izquierda',
+          ArrowRight: 'derecha',
+        };
+        manejarNavegacion(map[key]);
+      }
+
+      if (key === 'Enter' || key.toLowerCase() === 'a') {
+        if (estado === 'bienvenida') {
+          setEstado('menu');
+          sounds.confirm();
+        } else if (estado === 'menu' && !vistaInfo && !modalAbierto) {
+          setVistaInfo(true);
+          sounds.confirm();
+        }
+      }
+
+      if (key.toLowerCase() === 'b' || key === 'Backspace') {
+        if (modalAbierto) {
+          setModalAbierto(false);
+          sounds.back();
+        } else if (vistaInfo) {
+          setVistaInfo(false);
+          sounds.back();
+        } else if (estado === 'menu') {
+          setEstado('bienvenida');
+          sounds.back();
+        }
+      }
+
+      if (key.toLowerCase() === 'y' && estado === 'menu') {
+        setModalAbierto(true);
+        sounds.open();
+      }
+
+      if (key.toLowerCase() === 'x') {
+        window.open('https://github.com/SebasYe05', '_blank', 'noopener,noreferrer');
+        sounds.open();
+      }
+    };
+
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [estado, vistaInfo, modalAbierto, esMobile, manejarNavegacion]);
+
   const manejarPower = () => {
     if (estado === 'apagada') {
+      sounds.powerOn();
       setEstado('encendida');
       setTimeout(() => setEstado('bienvenida'), 1500);
     } else {
+      sounds.powerOff();
       setEstado('apagada');
       setVistaInfo(false);
       setScrollInfo(null);
@@ -44,72 +180,53 @@ function App() {
     }
   };
 
-  const manejarNavegacion = (direccion) => {
-    if (estado !== 'menu' || modalAbierto) return;
-
-    if (vistaInfo) {
-      if (direccion === 'arriba' || direccion === 'abajo') {
-        setScrollInfo(direccion);
-        setTimeout(() => setScrollInfo(null), 50);
-      }
-      return;
-    }
-
-    const totalApps = apps.length;
-    switch (direccion) {
-      case 'izquierda':
-      case 'arriba':
-        setAppSeleccionada((prev) => (prev - 1 + totalApps) % totalApps);
-        break;
-      case 'derecha':
-      case 'abajo':
-        setAppSeleccionada((prev) => (prev + 1) % totalApps);
-        break;
-      default:
-        break;
-    }
-  };
-
   const manejarA = () => {
     if (modalAbierto) return;
     if (estado === 'bienvenida') {
       setEstado('menu');
+      sounds.confirm();
     } else if (estado === 'menu' && !vistaInfo) {
       setVistaInfo(true);
+      sounds.confirm();
     }
   };
 
   const manejarB = () => {
     if (modalAbierto) {
       setModalAbierto(false);
+      sounds.back();
       return;
     }
     if (vistaInfo) {
       setVistaInfo(false);
       setScrollInfo(null);
+      sounds.back();
     } else if (estado === 'menu') {
       setEstado('bienvenida');
+      sounds.back();
     }
   };
 
-  // Y → modal con info completa de la app seleccionada
   const manejarY = () => {
     if (estado !== 'menu') return;
     setModalAbierto(true);
+    sounds.open();
   };
 
-  // X → copiar link del portafolio
-  const manejarX = async () => {
-    const url = window.location.href;
-    try {
-      await navigator.clipboard.writeText(url);
-      setToast('¡Link copiado al portapapeles!');
-    } catch {
-      setToast('No se pudo copiar el link');
-    }
+  // X → abrir GitHub
+  const manejarX = () => {
+    window.open('https://github.com/SebasYe05', '_blank', 'noopener,noreferrer');
+    sounds.open();
+    setToast('Abriendo GitHub…');
   };
 
-  // Bloqueo móvil
+  // START → mute/unmute
+  const manejarStart = () => {
+    const nowMuted = toggleMute();
+    setMuted(nowMuted);
+    setToast(nowMuted ? 'Sonido desactivado' : 'Sonido activado');
+  };
+
   if (esMobile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 p-6 text-center">
@@ -158,11 +275,16 @@ function App() {
             manejarPower={manejarPower}
             estado={estado}
             manejarNavegacion={manejarNavegacion}
+            iniciarHold={iniciarHold}
+            detenerHold={detenerHold}
           />
           <PantallaInferior
             estado={estado}
             appSeleccionada={appSeleccionada}
-            setAppSeleccionada={setAppSeleccionada}
+            setAppSeleccionada={(i) => {
+              setAppSeleccionada(i);
+              sounds.move();
+            }}
             alTocarPantalla={setEstado}
             vistaInfo={vistaInfo}
           />
@@ -171,21 +293,23 @@ function App() {
             manejarB={manejarB}
             manejarX={manejarX}
             manejarY={manejarY}
+            manejarStart={manejarStart}
             modalAbierto={modalAbierto}
+            muted={muted}
           />
         </div>
       </div>
 
-      {/* Toast X */}
       {toast && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-zinc-900 text-white text-sm font-medium shadow-xl animate-fade-in">
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full bg-zinc-900 text-white text-sm font-medium shadow-xl animate-fade-in flex items-center gap-2">
+          {muted ? <FaVolumeMute size={14} /> : null}
+          {!muted && toast.includes('activado') ? <FaVolumeUp size={14} /> : null}
           {toast}
         </div>
       )}
 
-      {/* Modal Y */}
       {modalAbierto && (
-        <ModalInfo appIndex={appSeleccionada} onClose={() => setModalAbierto(false)} />
+        <ModalInfo appIndex={appSeleccionada} onClose={() => { setModalAbierto(false); sounds.back(); }} />
       )}
     </div>
   );

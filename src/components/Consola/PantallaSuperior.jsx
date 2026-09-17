@@ -26,6 +26,8 @@ const iconComponents = {
   FaDatabase, FaMapMarkedAlt, FaChartBar,
 };
 
+const SCROLL_STEP = 56;
+
 const ContenidoInfo = ({ appId }) => {
   const info = INFO_APPS[appId];
   if (!info) return null;
@@ -112,9 +114,9 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
   useEffect(() => {
     if (!scrollRef.current) return;
     if (scrollInfo === 'arriba') {
-      scrollRef.current.scrollBy({ top: -40, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ top: -SCROLL_STEP, behavior: 'smooth' });
     } else if (scrollInfo === 'abajo') {
-      scrollRef.current.scrollBy({ top: 40, behavior: 'smooth' });
+      scrollRef.current.scrollBy({ top: SCROLL_STEP, behavior: 'smooth' });
     }
   }, [scrollInfo]);
 
@@ -129,7 +131,6 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
 
     updateScrollHints();
     el.addEventListener('scroll', updateScrollHints);
-    // Recalcular tras render del contenido
     const t = setTimeout(updateScrollHints, 80);
     return () => {
       el.removeEventListener('scroll', updateScrollHints);
@@ -209,14 +210,13 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
               {apps[appSeleccionada].id === 1 ? 'Junior Developer · Bogotá, Colombia' : 'Presiona A para más info'}
             </p>
             <div className="flex gap-2 justify-center mt-2">
-              <span className="text-[7px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full">A → Ver detalles</span>
+              <span className="text-[7px] bg-green-50 text-green-700 px-2 py-0.5 rounded-full">A → detalles · Y → modal</span>
             </div>
           </div>
         )}
 
         {estado === 'menu' && vistaInfo && (
           <>
-            {/* Hint superior */}
             {canScrollUp && (
               <div className="absolute top-0 left-0 right-0 z-10 flex justify-center pointer-events-none">
                 <div className="w-full h-6 bg-gradient-to-b from-white via-white/80 to-transparent flex items-start justify-center pt-0.5">
@@ -225,14 +225,10 @@ const PantallaSuperior = ({ estado, appSeleccionada, vistaInfo, scrollInfo }) =>
               </div>
             )}
 
-            <div
-              ref={scrollRef}
-              className="w-full h-full overflow-y-auto console-scroll"
-            >
+            <div ref={scrollRef} className="w-full h-full overflow-y-auto console-scroll">
               <ContenidoInfo appId={apps[appSeleccionada].id} />
             </div>
 
-            {/* Hint inferior */}
             {canScrollDown && (
               <div className="absolute bottom-0 left-0 right-0 z-10 flex justify-center pointer-events-none">
                 <div className="w-full h-7 bg-gradient-to-t from-white via-white/90 to-transparent flex flex-col items-center justify-end pb-1">
